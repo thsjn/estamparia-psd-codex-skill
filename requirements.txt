@@ -1,4 +1,5 @@
-Pillow
-numpy
-pytoshop
-psd-tools
+Pillow>=10
+numpy>=1.24
+pytoshop>=1.2.1
+six
+psd-tools>=1.9

@@ -1,3 +1,4 @@
 interface:
   display_name: "Estamparia PSD"
-  short_description: "Cria rapport e PSD com motivos separados"
+  short_description: "Entrevista, gera motivos e monta rapport e PSD em camadas"
+  default_prompt: "Use $estamparia-psd para criar uma estampa em rapport com barrado e PSD editável."

@@ -1,31 +1,66 @@
 ---
 name: estamparia-psd
-description: Criar estampas têxteis em rapport ou colocação com motivos raster separados, texturas opcionais, barrado e PSD em camadas. Use para projetos de estamparia editável, não para uma foto isolada sem estampa.
+description: Criar estampas têxteis editáveis com motivos raster separados, rapport contínuo (reto, meio-salto ou tijolo), barrado de colocação, textura opcional e PSD em camadas que abre no Photoshop e em editores fora da Adobe. Use quando o pedido for estampa, padronagem, rapport, repetição contínua, all-over, estampa corrida, módulo de estampa, barrado, estampa localizada, motivos separados em camadas, PSD de estamparia, arquivo para sublimação ou estamparia digital, ou foto/mockup de roupa com a estampa. Não use para uma foto isolada sem estampa.
 ---
 
 # Estamparia com PSD editável
 
-Produza arte de tecido e arquivos de produção coerentes com as referências do usuário. A direção visual pode variar; os invariantes técnicos são transparência real dos motivos, camadas separadas e repetição verificável quando houver rapport.
+Produz arte de tecido e arquivos de produção coerentes com as referências do usuário. A direção visual pode variar. Os invariantes técnicos não variam: motivos com transparência real, uma camada por ocorrência, repetição verificável e PSD que abre fora do psd-tools.
 
-## Entrada e direção
+## 1. Entrevista (antes de gerar qualquer motivo)
 
-- Inspecione referências já fornecidas e os arquivos do projeto. Identifique se cada imagem é referência de linguagem visual, modelagem, composição ou arte a reaproveitar. Não trate uma foto de roupa como módulo de impressão sem confirmação.
-- Se faltar referência visual para uma solicitação de estilo específico, peça ao usuário imagens ou links e agrupe as demais decisões essenciais na mesma pergunta: aplicação (rapport contínuo, arte de colocação ou ambos), dimensões/resolução, paleta, motivos obrigatórios e destino dos arquivos. Continue o trabalho independente enquanto aguarda. Se a solicitação já trouxer referência suficiente, avance.
-- Escreva uma direção de cena/estampa antes da geração: lista de motivos, hierarquia, densidade, escala, ritmo, cor, área de respiro e posição do barrado. Para fotos de roupa, descreva modelagem, mapa de aplicação da estampa, cenário, luz e enquadramento.
-- Ofereça textura como escolha de acabamento quando relevante: linho fino, trama de algodão, aquarela sobre papel, cetim discreto ou nenhuma. Não aplique textura por padrão se ela prejudicar leitura, transparência ou repetição. Separe a textura em camada própria.
+Pule o que o pedido ou as referências já respondem. No Claude Code, use `AskUserQuestion`. No Codex, use uma lista numerada com opções e um padrão, para a pessoa responder "1a 2b 3 padrão".
 
-## Motivos e composição
+1. **Aplicação:** a) rapport contínuo (all-over), b) arte de colocação com barrado, c) os dois. Padrão: c).
+2. **Tipo de repetição:** a) reta, b) meio-salto (half-drop, esconde melhor a grade), c) tijolo (brick). Padrão: b) para floral e orgânico, a) para geométrico.
+3. **Tamanho do módulo e resolução:** em cm e dpi, ou em px. Padrão: 2400 × 2400 px a 300 dpi (20,3 cm). Em meio-salto a altura precisa ser par; em tijolo, a largura.
+4. **Paleta e fundo:** cores com hex, ou "igual à referência".
+5. **Motivos obrigatórios e hierarquia:** herói, secundários e preenchimento; densidade (aberta, média, fechada).
+6. **Textura:** linho fino, trama de algodão, aquarela sobre papel, cetim discreto ou nenhuma. Padrão: nenhuma no rapport e opcional só na colocação.
+7. **Destino:** sublimação, estamparia digital, silk ou só apresentação. Se for gráfica com CMYK ou perfil ICC, avise que a saída é RGB 8 bits e precisa de conversão na produção.
 
-- Para criar ou editar imagens raster, siga a skill `imagegen` disponível no ambiente. Gere cada motivo distinto como PNG isolado com canal alfa verdadeiro, margem transparente e sem tecido, sombra, texto ou fundo retangular. Inspecione o alfa e recorte margens vazias antes de compor.
-- Crie arquivos separados para elementos que o usuário deve mover no Photoshop. Não agrupe aves, flores ou folhas distintas em uma única origem se o pedido exige movê-las individualmente. Repetições de um mesmo motivo podem usar a mesma origem, mas cada ocorrência no PSD deve ser uma camada própria com nome claro. Informe que partes pintadas dentro de um motivo permanecem unidas, salvo pedido de separação mais fina.
-- Monte o rapport por composição determinística dos PNGs sobre um módulo. Quando um motivo cruza a borda, envolva a mesma ocorrência na borda oposta. Gere uma prévia 2 × 2 e inspecione as quatro emendas, além de calcular diferenças de borda.
-- Trate o barrado de bainha como arte de colocação independente. O módulo all-over pode repetir em ambas as direções; a arte de colocação com barrado na base não deve ser apresentada como repetição vertical contínua. Exporte o barrado transparente separadamente.
-- Se a textura fizer parte do rapport, use textura que também repita sem emendas. Se for só acabamento de apresentação, aplique-a apenas à arte de colocação.
-- Se o usuário pedir foto de roupa ou mockup, use os arquivos da estampa como referência de aplicação e diferencie a visualização gerada do encaixe técnico de impressão. Preserve a modelagem indicada e registre o mapa dos motivos e barrados na roupa.
+Se faltar referência visual para um estilo específico, peça imagens ou links junto com as perguntas, numa mensagem só.
 
-## Entrega e validação
+## 2. Direção da estampa
 
-- Para composição raster e PSD em camadas, use `scripts/compose_psd.py` com o esquema de `references/manifest.md` quando atender ao caso; adapte o script ou o projeto quando houver exigências especiais de perfil de cor, canais, separação ou encaixe.
-- O script usa Pillow, NumPy e pytoshop; psd-tools verifica o PSD. As dependências estão em `requirements.txt`. Confirme a instalação no ambiente do projeto; não suponha que a skill instala bibliotecas ao ser invocada.
-- Verifique tamanho, resolução, modo de cor, transparência dos motivos, nomes/contagem de camadas, composição do PSD contra o PNG, continuidade visual do rapport e posição do barrado. Abra no Photoshop quando disponível; se não estiver disponível, declare essa verificação pendente.
-- Entregue PSD, PNG de colocação, PNG do módulo, prévia 2 × 2, barrado separado quando aplicável, motivos originais e direção de cena. Diferencie visualização gerada de foto/mockup e arquivo técnico de impressão.
+Escreva antes de gerar: lista de motivos, hierarquia, escala relativa, densidade, ritmo, cor, área de respiro e posição do barrado. Para foto de roupa, descreva modelagem, mapa de aplicação da estampa, cenário, luz e enquadramento. Se a skill `diretor-de-imagem` estiver instalada, use-a para a direção de foto e mockup.
+
+## 3. Motivos
+
+- Gere cada motivo distinto como PNG isolado com **canal alfa verdadeiro**, margem transparente, sem tecido, sombra, texto ou fundo retangular. Use a skill `imagegen` do ambiente e os modelos de prompt de [references/prompts-motivos.md](references/prompts-motivos.md).
+- Confira o alfa antes de compor. Um xadrez desenhado na imagem não é transparência. O compositor recusa PNG sem alfa ou sem área transparente.
+- Crie arquivos separados para tudo o que o usuário deve mover no Photoshop. Repetições de um mesmo motivo podem usar a mesma origem, mas cada ocorrência vira uma camada própria. Partes pintadas dentro de um motivo continuam unidas, salvo pedido de separação mais fina.
+
+## 4. Composição e PSD
+
+Monte um manifesto ([references/manifest.md](references/manifest.md)) e rode:
+
+```bash
+python scripts/compose_psd.py --manifest caminho/manifest.json --verify
+```
+
+- O compositor envolve nas bordas opostas o motivo que cruza o módulo, conforme o tipo de repetição.
+- **Motivo que cruza a borda vira camadas separadas, uma por peça** ("Flor 01 (peça 1 de 3)"). Mover uma peça sozinha quebra o rapport. Para reposicionar, mude `center` no manifesto e rode de novo.
+- **O barrado é arte de colocação,** nunca repetição vertical. Ele sai num PNG transparente separado e só entra no PSD de colocação. O compositor avisa quando o barrado cobre algum motivo.
+- **A textura é repetida, não esticada,** e fica numa camada própria com opacidade e modo de mesclagem (`multiply` por padrão) editáveis no Photoshop. Ela só entra no rapport com `include_in_repeat: true`. Nesse caso, o tamanho dela precisa dividir o módulo, e o compositor avisa se não dividir.
+- O PSD é RGB 8 bits com compressão RLE, a mesma que o Photoshop usa, e não leva grupos de camada. Nomes com acento aparecem no Photoshop; o campo de nome antigo recebe a versão sem acento.
+
+## 5. Validação (obrigatória antes de entregar)
+
+Leia o `<name>_checks.json`:
+
+- `verify_tile_psd.ok` e `verify_placement_psd.ok` precisam ser `true`. Eles conferem a contagem de camadas, a camada do topo e a renderização das camadas contra o PNG (tolerância de 3 em 255), e usam um segundo leitor (Pillow) para decodificar a imagem achatada.
+- `vertical_diagnostic_pass` e `horizontal_diagnostic_pass` mostram se a emenda segue o tipo de repetição. São diagnóstico: abra também a prévia 2 × 2.
+- `warnings`: trate cada aviso ou explique ao usuário por que ele foi aceito.
+- Se houver Photoshop ou outro editor disponível, abra o PSD. Se não houver, diga que a abertura interativa ficou pendente.
+
+## 6. Entrega
+
+PSD do módulo, PSD de colocação, PNG do módulo, PNG de colocação, prévia 2 × 2, barrado separado quando houver, motivos originais, manifesto e direção da estampa. Diferencie a foto ou mockup gerado do arquivo técnico de impressão.
+
+## Exemplo e teste de instalação
+
+```bash
+python scripts/criar_exemplo.py examples/jardim
+python scripts/compose_psd.py --manifest examples/jardim/manifest.json --verify
+```

@@ -3,10 +3,5 @@ __pycache__/
 .venv/
 venv/
 output/
-*.psd
-*.png
-*.jpg
-*.jpeg
-*.webp
-*.tif
-*.tiff
+# exemplos: os assets são gerados por scripts/criar_exemplo.py
+examples/*/assets/

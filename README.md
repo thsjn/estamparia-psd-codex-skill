@@ -1,18 +1,56 @@
-# Estamparia PSD para Codex
+# Estamparia PSD (skill para Codex e Claude Code)
 
-Skill para criar estampas têxteis com motivos raster separados, rapport verificável, barrado de colocação, textura opcional e PSD em camadas.
+Skill para criar estampas têxteis com motivos raster separados, rapport contínuo (reto, meio-salto ou tijolo), barrado de colocação, textura opcional e PSD em camadas.
+
+Ela entrevista a pessoa (aplicação, repetição, tamanho, paleta, motivos, textura, destino), escreve a direção da estampa, orienta a geração de cada motivo com fundo transparente e monta tudo num compositor determinístico. O compositor entrega um PSD que o Photoshop e outros editores abrem, com uma camada por ocorrência de motivo.
 
 ## Instalação
 
-Clone este repositório na pasta de skills do Codex, mantendo `SKILL.md` na raiz da pasta `estamparia-psd`. Invoque a skill com `$estamparia-psd` ao pedir uma estampa. A geração dos motivos usa a skill `imagegen` do ambiente Codex; o compositor local transforma PNGs transparentes em módulos e PSD.
+A pasta precisa se chamar `estamparia-psd`.
 
-Para executar o compositor, instale as dependências de [requirements.txt](requirements.txt) em um ambiente Python e prepare um manifesto conforme [references/manifest.md](references/manifest.md):
+Codex:
 
-```powershell
-python -m pip install -r requirements.txt
-python scripts/compose_psd.py --manifest manifest.json --verify
+```bash
+git clone https://github.com/thsjn/estamparia-psd-codex-skill ~/.codex/skills/estamparia-psd
 ```
 
-O compositor gera o módulo de rapport, uma prévia 2 × 2, a arte de colocação, o PSD e um relatório de verificações. Se houver barrado, ele é entregue em PNG transparente separado e aplicado somente à arte de colocação.
+Claude Code:
 
-Consulte [SKILL.md](SKILL.md) para o fluxo completo. A saída é RGB de 8 bits; trabalhos que exijam CMYK, perfil ICC específico ou especificações de gráfica precisam de adaptação e conferência na produção.
+```bash
+git clone https://github.com/thsjn/estamparia-psd-codex-skill ~/.claude/skills/estamparia-psd
+```
+
+Dependências do compositor (Python 3.10 ou mais novo):
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+Teste de instalação, que gera um projeto de exemplo e o compõe:
+
+```bash
+python scripts/criar_exemplo.py examples/jardim
+python scripts/compose_psd.py --manifest examples/jardim/manifest.json --verify
+```
+
+O comando termina sem erro e grava `examples/jardim/output/` com os PSDs, os PNGs, a prévia 2 × 2 e o `jardim_checks.json`.
+
+No Codex, invoque com `$estamparia-psd`. No Claude Code, a skill é acionada por pedidos de estampa, rapport ou barrado.
+
+## O que o compositor garante
+
+- **Ordem de camadas correta:** fundo embaixo e textura no topo.
+- **Compressão RLE,** a mesma que o Photoshop usa em 8 bits. A versão anterior gravava em ZIP, que vários editores fora da Adobe não decodificam.
+- **Sem grupos de camada.** Motivo que cruza a borda vira camadas vizinhas, uma por peça.
+- **Verificação real:** renderiza as camadas, sem confiar na imagem achatada guardada no arquivo, e decodifica o resultado com um segundo leitor.
+- **Avisos:** barrado cobrindo motivo, textura que não emenda e motivo maior que o módulo.
+
+## Limites
+
+A saída é RGB 8 bits. Trabalhos que exigem CMYK, perfil ICC ou especificação de gráfica precisam de conversão e conferência na produção. A abertura no Photoshop não é testada automaticamente.
+
+Veja [SKILL.md](SKILL.md) para o fluxo completo, [references/manifest.md](references/manifest.md) para o manifesto e [references/prompts-motivos.md](references/prompts-motivos.md) para gerar os motivos.
+
+## Licença
+
+MIT
